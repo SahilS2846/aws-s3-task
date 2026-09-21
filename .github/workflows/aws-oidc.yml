@@ -1,0 +1,33 @@
+name: AWS OIDC Setup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install boto3
+        run: pip install boto3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::050451386135:role/GitHub-OIDC-Setup-Role
+          aws-region: ap-south-1
+
+      - name: Run Python script
+        run: python scripts/setup_iam_roles.py
