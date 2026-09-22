@@ -60,7 +60,7 @@ def create_or_update_user(
 # User A → Bucket X
 create_or_update_user(
     "User-A",
-    "my-bucket-x-123",
+    "sahil-s3-task-x-050451386135",
     [
         "s3:GetObject",
         "s3:PutObject",
@@ -73,7 +73,7 @@ create_or_update_user(
 # User B → Upload only to Bucket Y
 create_or_update_user(
     "User-B",
-    "my-bucket-y-123",
+    "sahil-s3-task-y-050451386135",
     [
         "s3:PutObject"
     ]
@@ -83,7 +83,7 @@ create_or_update_user(
 # User C → Download only from Bucket Z
 create_or_update_user(
     "User-C",
-    "my-bucket-z-123",
+    "sahil-s3-task-z-050451386135",
     [
         "s3:GetObject"
     ]
