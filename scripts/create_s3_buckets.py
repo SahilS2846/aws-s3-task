@@ -11,7 +11,7 @@ s3 = boto3.client(
 BUCKETS = [
     "sahil-s3-task-x-050451386135",
     "sahil-s3-task-y-050451386135",
-    "sahil-s3-task-z-050451386135"
+    "sahil-s3-task-z-050451386135",
     "sahil-s3-task-L-050451386135"
 ]
 
