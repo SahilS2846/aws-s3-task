@@ -44,10 +44,17 @@ def create_or_update_role(
     }
 
     try:
-
         iam.get_role(RoleName=role_name)
 
         print(f"Role already exists: {role_name}")
+
+        # Update trust policy
+        iam.update_assume_role_policy(
+            RoleName=role_name,
+            PolicyDocument=json.dumps(trust_policy)
+        )
+
+        print(f"Updated trust policy: {role_name}")
 
     except iam.exceptions.NoSuchEntityException:
 
@@ -88,10 +95,10 @@ def create_or_update_role(
         PolicyDocument=json.dumps(policy)
     )
 
-    print(f"Updated policy for: {role_name}")
+    print(f"Updated policy: {role_name}")
 
 
-# User A / Role A
+# Role A → Bucket X
 create_or_update_role(
     "S3-Role-A",
     "my-bucket-x-123",
@@ -104,7 +111,7 @@ create_or_update_role(
 )
 
 
-# User B / Role B
+# Role B → Bucket Y
 create_or_update_role(
     "S3-Role-B",
     "my-bucket-y-123",
@@ -114,7 +121,7 @@ create_or_update_role(
 )
 
 
-# User C / Role C
+# Role C → Bucket Z
 create_or_update_role(
     "S3-Role-C",
     "my-bucket-z-123",
