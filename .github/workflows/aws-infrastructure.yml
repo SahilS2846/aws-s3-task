@@ -141,13 +141,13 @@ jobs:
         run: aws sts get-caller-identity
 
       - name: Verify Bucket X
-        run: aws s3api head-bucket --bucket my-bucket-x-123
+        run: aws s3api head-bucket --bucket sahil-s3-task-x-050451386135
 
       - name: Verify Bucket Y
-        run: aws s3api head-bucket --bucket my-bucket-y-123
+        run: aws s3api head-bucket --bucket sahil-s3-task-y-050451386135
 
       - name: Verify Bucket Z
-        run: aws s3api head-bucket --bucket my-bucket-z-123
+        run: aws s3api head-bucket --bucket sahil-s3-task-z-050451386135
 
       - name: Verify Role A
         run: aws iam get-role --role-name S3-Role-A
