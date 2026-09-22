@@ -4,6 +4,7 @@ import json
 iam = boto3.client("iam")
 
 ACCOUNT_ID = "050451386135"
+
 GITHUB_OWNER = "SahilS2846"
 GITHUB_REPO = "aws-s3-task"
 GITHUB_BRANCH = "main"
@@ -13,41 +14,72 @@ OIDC_PROVIDER = (
     "token.actions.githubusercontent.com"
 )
 
-def create_role(role_name, bucket_name, permissions):
+
+def create_or_update_role(
+    role_name,
+    bucket_name,
+    permissions,
+    allow_list=False
+):
+
     trust_policy = {
         "Version": "2012-10-17",
-        "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-                "Federated": OIDC_PROVIDER
-            },
-            "Action": "sts:AssumeRoleWithWebIdentity",
-            "Condition": {
-                "StringEquals": {
-                    "token.actions.githubusercontent.com:aud":
-                    "sts.amazonaws.com"
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Federated": OIDC_PROVIDER
                 },
-                "StringLike": {
-                    "token.actions.githubusercontent.com:sub":
-                    f"repo:{GITHUB_OWNER}/{GITHUB_REPO}:ref:refs/heads/{GITHUB_BRANCH}"
+                "Action": "sts:AssumeRoleWithWebIdentity",
+                "Condition": {
+                    "StringEquals": {
+                        "token.actions.githubusercontent.com:aud":
+                            "sts.amazonaws.com",
+                        "token.actions.githubusercontent.com:sub":
+                            f"repo:{GITHUB_OWNER}/{GITHUB_REPO}:ref:refs/heads/{GITHUB_BRANCH}"
+                    }
                 }
             }
-        }]
+        ]
     }
 
-    iam.create_role(
-        RoleName=role_name,
-        AssumeRolePolicyDocument=json.dumps(trust_policy),
-        Description=f"GitHub OIDC role for {bucket_name}"
-    )
+    try:
 
-    policy = {
-        "Version": "2012-10-17",
-        "Statement": [{
+        iam.get_role(RoleName=role_name)
+
+        print(f"Role already exists: {role_name}")
+
+    except iam.exceptions.NoSuchEntityException:
+
+        iam.create_role(
+            RoleName=role_name,
+            AssumeRolePolicyDocument=json.dumps(trust_policy),
+            Description=f"GitHub OIDC role for {bucket_name}"
+        )
+
+        print(f"Created role: {role_name}")
+
+    policy_statements = [
+        {
             "Effect": "Allow",
             "Action": permissions,
             "Resource": f"arn:aws:s3:::{bucket_name}/*"
-        }]
+        }
+    ]
+
+    if allow_list:
+
+        policy_statements.append(
+            {
+                "Effect": "Allow",
+                "Action": "s3:ListBucket",
+                "Resource": f"arn:aws:s3:::{bucket_name}"
+            }
+        )
+
+    policy = {
+        "Version": "2012-10-17",
+        "Statement": policy_statements
     }
 
     iam.put_role_policy(
@@ -56,22 +88,24 @@ def create_role(role_name, bucket_name, permissions):
         PolicyDocument=json.dumps(policy)
     )
 
-    print(f"Created role: {role_name}")
+    print(f"Updated policy for: {role_name}")
 
 
-# Add role configurations here
-
-create_role(
+# User A / Role A
+create_or_update_role(
     "S3-Role-A",
     "my-bucket-x-123",
     [
         "s3:GetObject",
         "s3:PutObject",
         "s3:DeleteObject"
-    ]
+    ],
+    allow_list=True
 )
 
-create_role(
+
+# User B / Role B
+create_or_update_role(
     "S3-Role-B",
     "my-bucket-y-123",
     [
@@ -79,7 +113,9 @@ create_role(
     ]
 )
 
-create_role(
+
+# User C / Role C
+create_or_update_role(
     "S3-Role-C",
     "my-bucket-z-123",
     [
