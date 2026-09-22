@@ -101,7 +101,7 @@ def create_or_update_role(
 # Role A → Bucket X
 create_or_update_role(
     "S3-Role-A",
-    "my-bucket-x-123",
+    "sahil-s3-task-x-050451386135",
     [
         "s3:GetObject",
         "s3:PutObject",
@@ -114,7 +114,7 @@ create_or_update_role(
 # Role B → Bucket Y
 create_or_update_role(
     "S3-Role-B",
-    "my-bucket-y-123",
+    "sahil-s3-task-y-050451386135",
     [
         "s3:PutObject"
     ]
@@ -124,7 +124,7 @@ create_or_update_role(
 # Role C → Bucket Z
 create_or_update_role(
     "S3-Role-C",
-    "my-bucket-z-123",
+    "sahil-s3-task-z-050451386135",
     [
         "s3:GetObject"
     ]
