@@ -9,9 +9,9 @@ s3 = boto3.client(
 )
 
 BUCKETS = [
-    "my-bucket-x-123",
-    "my-bucket-y-123",
-    "my-bucket-z-123"
+    "sahil-s3-task-x-050451386135",
+    "sahil-s3-task-y-050451386135",
+    "sahil-s3-task-z-050451386135"
 ]
 
 
